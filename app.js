@@ -1,7 +1,7 @@
 var http = require("http")
-var fs = require("fs")
+var fs = require("fs") // herhangi bir doyasnın içeriğini okumak için ya da dosyaya bir içerik yazdırabilmek için fs modülünü kullanıyor olmam gerekir.  
 
-// herhangi bir doyasnın içeriğini okumak için ya da dosyaya bir içerik yazdırabilmek için fs modülünü kullanıyor olmam gerekir.  
+
 
 
 const requestListener = (req , res ) => {
