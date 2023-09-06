@@ -1,56 +1,46 @@
 var http = require("http")
+var fs = require("fs")
 
-// yapılan requestin url parametresine göre response nasıl verilir 2
+// herhangi bir doyasnın içeriğini okumak için ya da dosyaya bir içerik yazdırabilmek için fs modülünü kullanıyor olmam gerekir.  
+
 
 const requestListener = (req , res ) => {
 
     console.log(req.url); //bulunduğumuz sayfanın urlesini verir
 
+//fs.readFile de ilk parametre okunacak dosya ismi , 2. parametrede ise bir fonksiyon veriyoruz bu fonksiyon okuma işlemi bittikten sonra html içeriği gelicek ben bunu res.write(html) aracılığıyla html içeriğini cevap olarak okutuyoruz. 
+
+    
     if (req.url == "/") {
 
+        fs.readFile("index.html", (error , html) => {
         res.writeHead(200 , {"Content-Type" : "text/html"})
-        res.write(`<head>
-            <title> anasayfa </title>
-            <meta charset="utf-8">
-            <body>
-                <h1>Aradıınız sayfa bulunamadı</h1>
-            </body>
-        </head>`)
+        res.write(html)
         res.end();
-
-    }else if (req.url == "/blogs"){
+        })
+    }
+    
+    else if (req.url == "/blogs"){
+        fs.readFile("blogs.html", (error , html) => {
         res.writeHead(200 , {"Content-Type" : "text/html"})
-        res.write(`<head>
-            <title> blogs </title>
-            <meta charset="utf-8">
-            <body>
-                <h1>blogs sayfası bulunamadı</h1>
-            </body>
-        </head>`)
+        res.write(html)
         res.end();
-    }else{
-        res.writeHead(404 , {"Content-Type" : "text/html"})
-        res.write(`<head>
-            <title> 404 </title>
-            <meta charset="utf-8">
-            <body>
-                <h1>Aradıınız sayfa bulunamadı</h1>
-            </body>
-        </head>`)
-        res.end();
+        })
     }
 
-
-
+    else{
+        fs.readFile("notFound.html", (error , html) => {
+        res.writeHead(404 , {"Content-Type" : "text/html"})
+        res.write(html)
+        res.end();
+    })
+    }
 }
-
 var server =http.createServer(requestListener)
-// burada bir tane server objesi oluşturmuş oluyoruz.
-// oluşturmuş olduğumuz server aslında olay tabanlı çalışır, yani server a bir talep geldiği zaman çağıralacak olan bir function tanımlıyoruz.   
+
 
 server.listen(3000)
 
-console.log("node.js serever at port 3000")
 
 
 
