@@ -1,13 +1,47 @@
 var http = require("http")
 
+// yapılan requestin url parametresine göre response nasıl verilir 2
+
 const requestListener = (req , res ) => {
 
-    
-    res.setHeader("Content-Type", "text/html"); //plain res.write da gönderdiğimiz değerleri sadece text olarakk algılarken bir eğer text/plain alanını text/html olarak değiştirirsek res.write(<h1>asd</h1>) şeklinde bir html kodu yazarsak html olduğunu anlar ve ve ekrana yazdırır.
-    res.statusCode= 200;
-    res.write("<h1>Bu bir hata mesajidir</h1>");
-    res.write("<p>sayfaya  ulaşilamiyor lütfen daha sonra tekrar deneyiniz</p>");
-    res.end();
+    console.log(req.url); //bulunduğumuz sayfanın urlesini verir
+
+    if (req.url == "/") {
+
+        res.writeHead(200 , {"Content-Type" : "text/html"})
+        res.write(`<head>
+            <title> anasayfa </title>
+            <meta charset="utf-8">
+            <body>
+                <h1>Aradıınız sayfa bulunamadı</h1>
+            </body>
+        </head>`)
+        res.end();
+
+    }else if (req.url == "/blogs"){
+        res.writeHead(200 , {"Content-Type" : "text/html"})
+        res.write(`<head>
+            <title> blogs </title>
+            <meta charset="utf-8">
+            <body>
+                <h1>blogs sayfası bulunamadı</h1>
+            </body>
+        </head>`)
+        res.end();
+    }else{
+        res.writeHead(404 , {"Content-Type" : "text/html"})
+        res.write(`<head>
+            <title> 404 </title>
+            <meta charset="utf-8">
+            <body>
+                <h1>Aradıınız sayfa bulunamadı</h1>
+            </body>
+        </head>`)
+        res.end();
+    }
+
+
+
 }
 
 var server =http.createServer(requestListener)
