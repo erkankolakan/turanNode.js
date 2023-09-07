@@ -1,12 +1,9 @@
 var http = require("http")
 var fs = require("fs") 
-
 // Post methotu kullanıcı tarafından servera bir bilgi gönderilmek istenildiğinde kullanılır.
 
 const requestListener = (req , res ) => {
-
     console.log(req.url); //bulunduğumuz sayfanın urlesini verir
-
 //fs.readFile de ilk parametre okunacak dosya ismi , 2. parametrede ise bir fonksiyon veriyoruz bu fonksiyon okuma işlemi bittikten sonra html içeriği gelicek ben bunu res.write(html) aracılığıyla html içeriğini cevap olarak okutuyoruz. 
 
     if (req.url == "/") {
@@ -49,11 +46,10 @@ const requestListener = (req , res ) => {
         res.end();
     });
 }}
-    
-
+     
 var server =http.createServer(requestListener);
 server.listen(3000);
-
+//bir form yazarken iki tane konuyu göz önünde bulundurmak gerekiyor. Birincisi formu bize get methodu kullanıcının önüne getirecek,get methodunun amacı serverden bir dosyayı getirmek, talep edip kullanıcının karşısına getirmek.  İkincisi kullanıcıdan bir bilgi istiyorsak da POST request aracılığıylada sana ben bir bilgi gönderiyorum diyoruz, bu durumda da request aracı eğer POST sa diyerek bir koşul ekliyoruz ve daha sonrasında bu gelen bilgi kaydetme işlemini yapıyoruz.   
 
 
 
