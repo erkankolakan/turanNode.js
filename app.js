@@ -1,11 +1,8 @@
 var http = require("http")
 var fs = require("fs") 
-// Post methotu kullanıcı tarafından servera bir bilgi gönderilmek istenildiğinde kullanılır.
+// Form data -> form tarafından gönderilen bilgileri server tarafından gelen bilgileri server tarafında nasıl ele alırız ?
 
 const requestListener = (req , res ) => {
-    console.log(req.url); //bulunduğumuz sayfanın urlesini verir
-//fs.readFile de ilk parametre okunacak dosya ismi , 2. parametrede ise bir fonksiyon veriyoruz bu fonksiyon okuma işlemi bittikten sonra html içeriği gelicek ben bunu res.write(html) aracılığıyla html içeriğini cevap olarak okutuyoruz. 
-
     if (req.url == "/") {
 
         fs.readFile("index.html", (error , html) => {
@@ -17,20 +14,32 @@ const requestListener = (req , res ) => {
         fs.readFile("blogs.html", (error , html) => {
         res.writeHead(200 , {"Content-Type" : "text/html"})
         res.write(html)
-        res.end();
-        })
+        res.end()
+    })
     }else if (req.url == "/create" && req.method === "POST"){
-        fs.appendFile("blogs.txt" , "denemeEğ", (err) => {
-            if(err){
-                console.log(err);
-            }else {
-                res.statusCode = 302; //aslında bir hata kodu değil bilgilendirme geri döngüsüdür. Yönlendirme yaptığımızı söylüyoz
-                res.setHeader("Location","/")  //location bilgisini / yaparak ana sayfaya gitmesini sağlıyoruz
-                res.end();
-//burda aslında bir bilgiyi kaydettikten sonra geri çevap gönderik ve ardından setHeader ile de kullanıcıyı home sayfasına göndermiş olduk. 
-            }
-        })
-        //apendFile ilgili konumda xxxx.yyy yoksa o dosyayı oluşturur eğer varsa da sonuna 2. parametredeki değeri yazar. 3. parametre de eğer bir hata oluşşmuşsa bize hata parametresi değerini döndür demiş oluruz. 
+           
+            const data=[] //gelene dataları bu dizide topladık
+
+            req.on("data", (chunk)=> { //req.on ile partçalara erişiyoruz ve dizimiz pushluyoruz
+                data.push(chunk)
+
+            }) //gelen req de buffer(durak) da bir olay fırlatılıyordu bu olay data olayıdır. O bilgi kümesinin alındığı nokta bufer noktasıydı. 
+
+            req.on("end" , () => { //bütün bilgiler biter bütün bilgiler server a aktalırır o zaman end olayı gerçekleştirilir. 
+
+                const cevap = Buffer.concat(data).toString() //Buufer.concat ile data dizisini aldık ve string bir ifadeye çevirdik.
+                const parsedData = cevap.split("=")[1]; //gelen bilgi title=kolakana şeklinde geldiği için ben onlardan ayıklayıp istenilen bilgiyi aldım.
+
+                fs.appendFile("blogs.txt" , parsedData, (err) => {  //burda stringi çevirdiğimiz ve temizlediğimiz bilgiyi fs.appendFile ile bir dosyada depoluyoruz.
+                    if(err){
+                        console.log(err);
+                    }else {
+                        res.statusCode = 302; 
+                        res.setHeader("Location","/") 
+                        res.end();
+                    }
+                })
+            }  ) 
     }
     
     else if (req.url == "/create"){
@@ -48,7 +57,7 @@ const requestListener = (req , res ) => {
 }}
      
 var server =http.createServer(requestListener);
-server.listen(3000);
+server.listen(3001);
 //bir form yazarken iki tane konuyu göz önünde bulundurmak gerekiyor. Birincisi formu bize get methodu kullanıcının önüne getirecek,get methodunun amacı serverden bir dosyayı getirmek, talep edip kullanıcının karşısına getirmek.  İkincisi kullanıcıdan bir bilgi istiyorsak da POST request aracılığıylada sana ben bir bilgi gönderiyorum diyoruz, bu durumda da request aracı eğer POST sa diyerek bir koşul ekliyoruz ve daha sonrasında bu gelen bilgi kaydetme işlemini yapıyoruz.   
 
 
